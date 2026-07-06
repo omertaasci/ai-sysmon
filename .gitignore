@@ -1,0 +1,17 @@
+# C build artifacts
+agent/build/
+*.obj
+*.exe
+*.pdb
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment/secrets
+.env
+
+# Editor
+.vscode/
