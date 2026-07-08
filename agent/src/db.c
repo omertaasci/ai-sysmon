@@ -38,7 +38,8 @@ void db_disconnect(void) // close db connection
 }
 
 // insert one row of system metrics into the database
-int db_insert_metrics(double cpu_percent, unsigned long long ram_used_mb, unsigned long long ram_total_mb)
+int db_insert_metrics(double cpu_percent, unsigned long long ram_used_mb, unsigned long long ram_total_mb,
+                       double disk_used_gb, double disk_total_gb)
 {
     if (conn == NULL) // no db connection, cannot insert anything
     {
@@ -48,26 +49,25 @@ int db_insert_metrics(double cpu_percent, unsigned long long ram_used_mb, unsign
     const char *sql = 
         // $1, $2, $3, $4 are placeholders, The real values will be provided separately
         // using parameters is safer than building sql strings manually
-        "INSERT INTO system_metrics (machine_id, collected_at, cpu_percent, ram_used_mb, ram_total_mb) "
-        "VALUES ($1, now(), $2, $3, $4)";
+        "INSERT INTO system_metrics (machine_id, collected_at, cpu_percent, ram_used_mb, ram_total_mb, disk_used_gb, disk_total_gb) "
+        "VALUES ($1, now(), $2, $3, $4, $5, $6)";
 
     char machine_id_str[16]; // buffer to hold machine id as text
     char cpu_str[32]; // buffer to hold spu percentage as text
     char ram_used_str[32]; // buffer to hold used ram as text
     char ram_total_str[32]; // buffer to hold total ram as text
+    char disk_used_str[32]; // buffer to hold used disk as text
+    char disk_total_str[32]; // buffer to gold total disk as text
 
     // convert int 1 into a str
     // snprintf() is safer than sprintf() because it prevents buffer overflow
     snprintf(machine_id_str, sizeof(machine_id_str), "%d", 1);
 
-    // convert cpu percentage into text with 2 decimal places
-    snprintf(cpu_str, sizeof(cpu_str), "%.2f", cpu_percent);
-
-    // convert used ram into text
-    snprintf(ram_used_str, sizeof(ram_used_str), "%llu", ram_used_mb);
-
-    // convert total ram into text
-    snprintf(ram_total_str, sizeof(ram_total_str), "%llu", ram_total_mb);
+    snprintf(cpu_str, sizeof(cpu_str), "%.2f", cpu_percent); // convert cpu percentage into text with 2 decimal places
+    snprintf(ram_used_str, sizeof(ram_used_str), "%llu", ram_used_mb); // convert used ram into text
+    snprintf(ram_total_str, sizeof(ram_total_str), "%llu", ram_total_mb); // convert total ram into text
+    snprintf(disk_used_str, sizeof(disk_used_str), "%.2f", disk_used_gb); // convert used disk into text 
+    snprintf(disk_total_str, sizeof(disk_total_str), "%.2f", disk_total_gb); // convert total disk into text
 
     // array containing all parameter values
     // sql will replace:
@@ -75,12 +75,12 @@ int db_insert_metrics(double cpu_percent, unsigned long long ram_used_mb, unsign
     // $2 -> cpu_str
     // $3 -> ram_used_str
     // $4 -> ram_total_str
-    const char *params[4] = {machine_id_str, cpu_str, ram_used_str, ram_total_str};
+    const char *params[6] = {machine_id_str, cpu_str, ram_used_str, ram_total_str, disk_used_str, disk_total_str};
 
     PGresult *res = PQexecParams(
         conn,
         sql,
-        4,        // number of parameters
+        6,        // number of parameters
         NULL,     // let PostgreSQL guess parameter types
         params,   // the actual values, as text
         NULL,     // parameter lengths (not needed for text format)

@@ -12,6 +12,7 @@ src/main.c
 src/cpu.c
 src/ram.c
 src/db.c
+src/disk.c
 )
 
 target_include_directories(sysmon_agent PRIVATE include "${PG_ROOT}/include")
