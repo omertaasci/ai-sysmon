@@ -31,4 +31,5 @@ CREATE TABLE processes (
     ram_used_mb BIGINT
 );
 
+INSERT INTO machines (hostname, os_type) VALUES ('my-pc', 'windows');
 CREATE INDEX idx_system_metrics_machine_time ON system_metrics (machine_id, collected_at);
