@@ -2,6 +2,7 @@
 #include <libpq-fe.h> // postgresql client library 
 #include <stdio.h>
 
+
 // holds the connection to postgresql. only this file needs to see it
 static PGconn *conn = NULL;
 
@@ -100,4 +101,38 @@ int db_insert_metrics(double cpu_percent, unsigned long long ram_used_mb, unsign
     PQclear(res);
     
     return 1; // INSERT successful
+}
+
+int db_insert_processes(ProcessInfo *list, int count) {
+    if (conn == NULL) {
+        return 0;
+    }
+
+    for (int i = 0; i < count; i++) {
+        const char *sql =
+            "INSERT INTO processes (machine_id, collected_at, pid, process_name) "
+            "VALUES ($1, now(), $2, $3)";
+
+        char machine_id_str[16];
+        char pid_str[16];
+
+        snprintf(machine_id_str, sizeof(machine_id_str), "%d", 1);
+        snprintf(pid_str, sizeof(pid_str), "%lu", list[i].pid);
+
+        const char *params[3] = { machine_id_str, pid_str, list[i].name };
+
+        PGresult *res = PQexecParams(
+            conn, sql, 3, NULL, params, NULL, NULL, 0
+        );
+
+        if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+            printf("Process insert failed: %s\n", PQerrorMessage(conn));
+            PQclear(res);
+            return 0;
+        }
+
+        PQclear(res);
+    }
+
+    return 1;
 }

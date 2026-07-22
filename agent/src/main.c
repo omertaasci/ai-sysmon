@@ -3,6 +3,10 @@
 #include "cpu.h"
 #include "ram.h"
 #include "disk.h"
+#include "db.h"
+#include "process.h"
+
+#define MAX_PROCESSES 512
 
 int main(void)
 {
@@ -26,7 +30,17 @@ int main(void)
 
         // %llu is the printf format for unsigned long long
         printf("CPU usage: %.2f%% | RAM: %llu MB / %llu MB | Disk: %.2f GB / %.2f GB\n",
-       cpu, ram_used, ram_total, disk_used, disk_total);
+        cpu, ram_used, ram_total, disk_used, disk_total);
+
+
+        ProcessInfo processes[MAX_PROCESSES];
+        int process_count = get_process_list(processes, MAX_PROCESSES);
+        printf("Found %d processes. First few:\n", process_count);
+        if (!db_insert_processes(processes, process_count)) 
+        {
+            printf("Failed to save process list.\n");
+        }
+
 
         int inserted = 0;
         int attempts = 0;
