@@ -14,11 +14,13 @@ src/ram.c
 src/db.c
 src/disk.c
 src/process.c
+src/network.c
 )
 
 target_include_directories(sysmon_agent PRIVATE include "${PG_ROOT}/include")
 target_link_directories(sysmon_agent PRIVATE "${PG_ROOT}/lib")
 target_link_libraries(sysmon_agent PRIVATE libpq)
+target_link_libraries(sysmon_agent PRIVATE libpq iphlpapi)
 
 add_custom_command(TARGET sysmon_agent POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
