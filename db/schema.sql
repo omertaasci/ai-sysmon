@@ -31,5 +31,16 @@ CREATE TABLE processes (
     ram_used_mb BIGINT
 );
 
+CREATE TABLE alerts (
+    id SERIAL PRIMARY KEY,
+    machine_id INT NOT NULL REFERENCES machines(id),
+    metric_name TEXT NOT NULL,
+    metric_value DOUBLE PRECISION NOT NULL,
+    z_score DOUBLE PRECISION NOT NULL,
+    severity TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 INSERT INTO machines (hostname, os_type) VALUES ('my-pc', 'windows');
 CREATE INDEX idx_system_metrics_machine_time ON system_metrics (machine_id, collected_at);
