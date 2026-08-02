@@ -22,6 +22,11 @@ A lightweight system monitoring and analysis platform for Windows, inspired by t
 - **Python Analysis Layer** - reads metrics with `pandas`, computes statistics, detects anomalies via z-score, predicts short-term trends via linear regression, and writes alerts back to the database.
 - **PySide6 Desktop App** - a live dashboard showing current CPU/RAM/disk usage and a real-time CPU history chart, refreshing on a configurable interval.
 
+## Screenshots
+
+![Dashboard](docs/screenshots/dashboard-1.png)
+![Dashboard](docs/screenshots/dashboard-2.png)
+
 ## Features
 
 - Real-time collection of CPU, RAM, disk, network, and per-process metrics on Windows
@@ -129,3 +134,19 @@ Edit `config.json` at the project root to adjust behavior without touching code:
 cd analysis
 pytest tests/
 ```
+## Known Limitations
+
+- Single-machine monitoring only (`machine_id` is hardcoded/config-based, no multi-host UI yet)
+- PostgreSQL credentials are hardcoded for simplicity - not suitable for production as-is
+- PostgreSQL must be started manually each session (no Windows service registered)
+- Anomaly detection uses a simple z-score model - no seasonality or multivariate detection
+- Windows-only metric collection (architecture is designed so a Linux agent could be added later by replacing only the collection module)
+
+## Roadmap / Possible Extensions
+- Linux monitoring agent (replacing only the collection module)
+- Web dashboard (Flask/FastAPI)
+- Multi-machine fleet view
+- More advanced anomaly detection (e.g. moving-window models, seasonality-aware baselines)
+
+## License
+MIT
