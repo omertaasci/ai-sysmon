@@ -27,7 +27,10 @@ A lightweight system monitoring and analysis platform for Windows, inspired by t
 ![Dashboard](docs/screenshots/dashboard-1.png)
 
 
-(docs/screenshots/dashboard-2.png)
+-------------------------------------------------------------------
+
+
+![Dashboard](docs/screenshots/dashboard-2.png)
 
 ## Features
 
